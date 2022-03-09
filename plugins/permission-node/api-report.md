@@ -67,15 +67,17 @@ export type ConditionTransformer<TQuery> = (
 
 // @public
 export const createConditionExports: <
+  TResourceType extends string,
   TResource,
   TRules extends Record<string, PermissionRule<TResource, any, unknown[]>>,
 >(options: {
   pluginId: string;
-  resourceType: string;
+  resourceType: TResourceType;
   rules: TRules;
 }) => {
   conditions: Conditions<TRules>;
-  createPolicyDecision: (
+  createConditionalDecision: (
+    permission: ResourcePermission<TResourceType>,
     conditions: PermissionCriteria<PermissionCondition>,
   ) => ConditionalPolicyDecision;
 };
