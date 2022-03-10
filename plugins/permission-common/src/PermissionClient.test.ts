@@ -215,6 +215,7 @@ describe('PermissionClient', () => {
             result: AuthorizeResult.CONDITIONAL,
             conditions: {
               rule: 'FOO',
+              resourceType: 'test-resource',
               params: ['bar'],
             },
           }),
@@ -262,6 +263,7 @@ describe('PermissionClient', () => {
           result: AuthorizeResult.CONDITIONAL,
           conditions: {
             rule: 'FOO',
+            resourceType: 'test-resource',
             params: ['bar'],
           },
         }),
