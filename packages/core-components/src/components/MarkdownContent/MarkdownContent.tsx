@@ -68,6 +68,7 @@ type Props = {
   content: string;
   dialect?: 'gfm' | 'common-mark';
   linkTarget?: Options['linkTarget'];
+  className?: string;
 };
 
 const components: Options['components'] = {
@@ -96,7 +97,7 @@ export function MarkdownContent(props: Props) {
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
-      className={classes.markdown}
+      className={`${classes.markdown} ${props.className}`}
       children={content}
       components={components}
       linkTarget={linkTarget}
