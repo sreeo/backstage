@@ -15,7 +15,7 @@
  */
 
 import chalk from 'chalk';
-import { Command } from 'commander';
+import { Command, OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { PackageGraph, ExtendedPackageJSON } from '../../lib/monorepo';
 import { runWorkerQueueThreads } from '../../lib/parallel';
@@ -29,12 +29,15 @@ function depCount(pkg: ExtendedPackageJSON) {
   return deps + devDeps;
 }
 
-export async function command(cmd: Command): Promise<void> {
+export async function command(
+  cmdOptions: OptionValues,
+  _cmd: Command,
+): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
 
-  if (cmd.since) {
+  if (cmdOptions.since) {
     const graph = PackageGraph.fromPackages(packages);
-    packages = await graph.listChangedPackages({ ref: cmd.since });
+    packages = await graph.listChangedPackages({ ref: cmdOptions.since });
   }
 
   // Packages are ordered from most to least number of dependencies, as a
@@ -42,7 +45,7 @@ export async function command(cmd: Command): Promise<void> {
   packages.sort((a, b) => depCount(b.packageJson) - depCount(a.packageJson));
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
-  if (cmd.format === 'eslint-formatter-friendly') {
+  if (cmdOptions.format === 'eslint-formatter-friendly') {
     process.chdir(paths.targetRoot);
   }
 
@@ -57,8 +60,8 @@ export async function command(cmd: Command): Promise<void> {
       relativeDir: relativePath(paths.targetRoot, pkg.dir),
     })),
     workerData: {
-      fix: Boolean(cmd.fix),
-      format: cmd.format as string | undefined,
+      fix: Boolean(cmdOptions.fix),
+      format: cmdOptions.format as string | undefined,
     },
     workerFactory: async ({ fix, format }) => {
       const { ESLint } = require('eslint');
